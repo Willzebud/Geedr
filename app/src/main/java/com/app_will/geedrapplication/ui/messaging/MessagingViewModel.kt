@@ -1,0 +1,10 @@
+package com.app_will.geedrapplication.ui.messaging
+
+import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+
+@HiltViewModel
+class MessagingViewModel @Inject constructor(): ViewModel() {
+}

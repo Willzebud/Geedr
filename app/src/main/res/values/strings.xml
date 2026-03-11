@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">Geedr</string>
+
+    <string name="splash_screen_slogan">Look up, live the connection</string>
+
+    <string name="login_screen_title">Log in</string>
+    <string name="login_screen_login_label">Login</string>
+    <string name="login_screen_password_label">Password</string>
+    <string name="login_screen_button_label">Log in</string>
+    <string name="login_screen_navigate_register_label">No account? Sign up!</string>
+    <string name="login_screen_wrong_mail_password">Incorrect email or password</string>
+
+    <string name="auth_validator_utils_error_message">Please fill in all fields</string>
+
+    <string name="try_catch_error">try catch error</string>
+    <string name="get_user_error">get user error</string>
+
+    <string name="please_fill_in_all_fields">Please fill in all fields</string>
+    <string name="server_not_response">The server is not responding</string>
+    <string name="authenticated_successful">Authenticated successful</string>
+    <string name="unknown_user" >Unknown user (incorrect login/password)</string>
+    <string name="parameter_problem">Parameter problem</string>
+    <string name="unauthorized">Unauthorized</string>
+    <string name="service_unavailable">Service temporarily unavailable</string>
+    <string name="error_occurred">An error has occurred</string>
+    <string name="new_account_created">New account created</string>
+    <string name="login_already_used">Login already used</string>
+    <string name="new_account_not_created">New account not created</string>
+    <string name="mysql_error">Mysql error</string>
+    <string name="unauthorized_access">Unauthorized access</string>
+    <string name="bad_match_token_user_id">Bad match token/user_id</string>
+    <string name="api_303" >Article not found</string>
+    <string name="api_401" translatable="false">Unknown User</string>
+
+    <string name="main_second_title">Choose your place for seeing the profiles in</string>
+    <string name="main_type_of_places"> : </string>
+    <string name="main_city">Ville : </string>
+    <string name="main_view_model_m">m</string>
+</resources>
