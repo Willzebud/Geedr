@@ -1,9 +1,8 @@
 package com.app_will.feedarticlesjetpackcomposeapplication.ui.splash
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app_will.geedrapplication.navigation.ScreenNavigation
+import com.app_will.geedrapplication.navigation.RootNavigation
 import com.app_will.geedrapplication.utils.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -22,10 +21,10 @@ class SplashViewModel @Inject constructor(
     private val _isProgressBarActiveStateFlow = MutableStateFlow(false)
     val isProgressBarActiveStateFlow = _isProgressBarActiveStateFlow.asStateFlow()
 
-    private val _navigateToLogin = MutableSharedFlow<ScreenNavigation>()
+    private val _navigateToLogin = MutableSharedFlow<RootNavigation>()
     val navigateToLogin = _navigateToLogin.asSharedFlow()
 
-    private val _navigateToMain = MutableSharedFlow<ScreenNavigation>()
+    private val _navigateToMain = MutableSharedFlow<RootNavigation>()
     val navigateToMain = _navigateToMain.asSharedFlow()
 
     fun navigate() {
@@ -36,10 +35,8 @@ class SplashViewModel @Inject constructor(
             myPref.loadSession()
             val user = myPref.getUser()
 
-            Log.d("TESSSST", "$user")
-
-            if(user != null) _navigateToMain.emit(ScreenNavigation.Main)
-            else _navigateToLogin.emit(ScreenNavigation.Login)
+            if(user != null) _navigateToMain.emit(RootNavigation.Main)
+            else _navigateToLogin.emit(RootNavigation.Login)
 
             _isProgressBarActiveStateFlow.value = false
         }

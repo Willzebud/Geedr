@@ -39,7 +39,6 @@ fun actualGeoLocalisation(latitude: Double, longitude: Double): String {
     val distanceKm = userGeo.haversine(placeGeo)
 
     return "${(distanceKm * 1000).toInt()} m"
-
 }
 
 fun openGoogleMap(

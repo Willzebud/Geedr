@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 
 data class UserDto(
     @Json(name = "id")
-    val id: String,
+    val userId: String,
 
     @Json(name = "user_name")
     val userName: String,
@@ -27,6 +27,9 @@ data class UserDto(
     @Json(name = "user_gender")
     val userGender: String,
 
+    @Json(name = "user_sexual_orientation")
+    val userSexualOrientation: String,
+
     @Json(name = "user_picture_url")
     val userPicture: String,
 
@@ -36,14 +39,20 @@ data class UserDto(
     @Json(name = "user_job")
     val userJob: String,
 
+    @Json(name = "user_about_me")
+    val userAboutMe: List<String>,
+
     @Json(name = "user_passions")
     val userPassions: List<String>,
 
-    @Json(name = "user_politic_choice")
-    val userPoliticChoice: String,
-
     @Json(name = "user_role")
     val userRole: String,
+
+    @Json(name = "place_number")
+    val placeNumber: Int,
+
+    @Json(name = "is_visible")
+    val isUserVisible: Boolean,
 
     @Json(name = "user_status")
     val userStatus: String,

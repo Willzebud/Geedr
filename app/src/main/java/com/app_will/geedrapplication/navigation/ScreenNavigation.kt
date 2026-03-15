@@ -1,10 +1,17 @@
 package com.app_will.geedrapplication.navigation
 
-sealed class ScreenNavigation(val route: String) {
-    object Splash : ScreenNavigation("splash")
-    object Login : ScreenNavigation("login")
-    object Main: ScreenNavigation("main")
-    object Profile: ScreenNavigation("profile")
-    object Messaging: ScreenNavigation("messaging")
-    object CheckinProfile: ScreenNavigation("checkinProfile")
+sealed class RootNavigation(val route: String) {
+    object Splash : RootNavigation("splash")
+    object Login : RootNavigation("login")
+    object Main: RootNavigation("main")
+
+}
+
+
+sealed class MainNavigation(val route: String){
+    object Places : MainNavigation("places")
+    object CheckinUser: MainNavigation("checkinUserScreen")
+    object UserCheckinProfil: MainNavigation("userCheckinProfil")
+    object Profile: MainNavigation("profile")
+    object Messaging: MainNavigation("messaging")
 }

@@ -16,14 +16,10 @@ data class PlacesDto (
     val isUserThere: Boolean,
     @Json(name = "user_checkin")
     val userCheckin: Int,
-    @Json(name = "address_street")
-    val addressStreet: String,
     @Json(name = "address_city")
     val addressCity: String,
     @Json(name = "address_zip")
     val addressZip: String,
-    @Json(name = "address_country")
-    val addressCountry: String,
     @Json(name = "place_radius_m")
     val placeRadiusM: Int
 )

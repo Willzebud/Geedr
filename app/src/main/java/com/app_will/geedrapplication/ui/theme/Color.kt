@@ -4,5 +4,6 @@ import androidx.compose.ui.graphics.Color
 
 
 val PinkPrimary = Color(0xFFF88E8E)
-
 val GreyPrimary = Color(0xFF717171)
+val BluePrimary = Color(0xFF8EC5F8)
+val LightPink = Color(0XFFFFFBFE)

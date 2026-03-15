@@ -1,6 +1,5 @@
 package com.app_will.geedrapplication.ui.splash
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,16 +16,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.app_will.feedarticlesjetpackcomposeapplication.ui.splash.SplashViewModel
 import com.app_will.geedrapplication.R
-import com.app_will.geedrapplication.navigation.ScreenNavigation
+import com.app_will.geedrapplication.navigation.RootNavigation
 import com.app_will.geedrapplication.ui.components.ProgressBar
 
 @Composable
@@ -41,7 +38,7 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
         splashViewModel.navigateToLogin.collect {
             navController.navigate(it.route) {
-                popUpTo(ScreenNavigation.Splash.route) {
+                popUpTo(RootNavigation.Splash.route) {
                     inclusive = true
                 }
             }
@@ -51,7 +48,7 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
         splashViewModel.navigateToMain.collect {
             navController.navigate(it.route) {
-                popUpTo(ScreenNavigation.Splash.route) {
+                popUpTo(RootNavigation.Splash.route) {
                     inclusive = true
                 }
             }

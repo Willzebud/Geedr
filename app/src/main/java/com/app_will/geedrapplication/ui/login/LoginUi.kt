@@ -1,15 +1,12 @@
 package com.app_will.geedrapplication.ui.login
 
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,7 +22,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.app_will.geedrapplication.R
-import com.app_will.geedrapplication.navigation.ScreenNavigation
+import com.app_will.geedrapplication.navigation.RootNavigation
 import com.app_will.geedrapplication.ui.components.ButtonComponent
 import com.app_will.geedrapplication.ui.components.ProgressBar
 import com.app_will.geedrapplication.ui.components.TextField
@@ -57,7 +54,7 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         loginViewModel.navigateToMainSharedFlow.collect {
             navController.navigate(it.route) {
-                popUpTo(ScreenNavigation.Login.route) { inclusive = true }
+                popUpTo(RootNavigation.Login.route) { inclusive = true }
             }
         }
     }

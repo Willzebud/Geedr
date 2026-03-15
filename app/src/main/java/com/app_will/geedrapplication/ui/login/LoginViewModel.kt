@@ -3,7 +3,7 @@ package com.app_will.geedrapplication.ui.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app_will.geedrapplication.R
-import com.app_will.geedrapplication.navigation.ScreenNavigation
+import com.app_will.geedrapplication.navigation.RootNavigation
 import com.app_will.geedrapplication.repository.ApiRepository
 import com.app_will.geedrapplication.utils.SharedPreferencesManager
 import com.app_will.geedrapplication.utils.UiEvent
@@ -33,7 +33,7 @@ class LoginViewModel @Inject constructor(
     val responseUserStateFlow = _responseUserStateFlow.asSharedFlow()
 
 
-    private val _navigateToMainSharedFlow = MutableSharedFlow<ScreenNavigation>()
+    private val _navigateToMainSharedFlow = MutableSharedFlow<RootNavigation>()
     val navigateToMainSharedFlow = _navigateToMainSharedFlow.asSharedFlow()
 
     fun login(
@@ -59,11 +59,11 @@ class LoginViewModel @Inject constructor(
 
             try {
                 val res = withContext(Dispatchers.IO) {
-                    apiRepository.login(userIdentifier, userPassword)
+                    apiRepository.login(userIdentifier.toLong(), userPassword)
                 }
 
                 val user = res.body()?.firstOrNull()
-                val userId = user?.id
+                val userId = user?.userId
 
                 if (userId != null) {
                     myPref.createSession(userId)
@@ -72,7 +72,7 @@ class LoginViewModel @Inject constructor(
                         UiEvent.ShowToast(R.string.authenticated_successful)
                     )
 
-                    _navigateToMainSharedFlow.emit(ScreenNavigation.Main)
+                    _navigateToMainSharedFlow.emit(RootNavigation.Main)
                 } else {
                     _responseUserStateFlow.emit(
                         UiEvent.ShowToast(R.string.login_screen_wrong_mail_password)
