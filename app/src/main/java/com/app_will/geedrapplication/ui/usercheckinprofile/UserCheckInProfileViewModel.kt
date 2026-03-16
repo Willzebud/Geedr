@@ -103,8 +103,8 @@ class UserCheckInProfileViewModel @Inject constructor(
             try {
                 val res = withContext(Dispatchers.IO) {
                     apiRepository.updateUserVisibility(
-                        userCheckinId = userCheckInId,
-                        userCheckinVisibility = UpdateUserDto(
+                        userCheckInId = userCheckInId,
+                        userCheckInVisibility = UpdateUserDto(
                             isUserVisible = userCheckInVisibility
                         )
                     )

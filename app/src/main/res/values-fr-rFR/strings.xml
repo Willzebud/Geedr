@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Geedr</string>
+
+    <string name="splash_screen_slogan">Levez les yeux, vivez votre rencontre</string>
+
+    <string name="login_screen_title">Connexion</string>
+    <string name="login_screen_login_label">Identifiant</string>
+    <string name="login_screen_password_label">Mot de passe</string>
+    <string name="login_screen_button_label">Se connecter</string>
+    <string name="login_screen_navigate_register_label">Pas de compte ? Inscrivez-vous !</string>
+    <string name="login_screen_wrong_mail_password">Email ou mot de passe incorrect</string>
+
+    <string name="auth_validator_utils_error_message">Veuillez remplir tous les champs</string>
+    <string name="try_catch_error">Erreur try catch</string>
+    <string name="get_user_error">Erreur lors de la récupération de l\'utilisateur</string>
+
+    <string name="please_fill_in_all_fields">Veuillez remplir tous les champs</string>
+    <string name="server_not_response">Le serveur ne répond pas</string>
+    <string name="authenticated_successful">Authentification réussie</string>
+    <string name="unknown_user" >Utilisateur inconnu (identifiant/mot de passe incorrect)</string>
+    <string name="error_occurred">Une erreur est survenue</string>
+
+    <string name="api_response_404">Oups on a rien trouvé</string>
+    <string name="api_response_500">Erreur serveur</string>
+
+    <string name="main_second_title">Rentrez dans un lieu pour voir les profils</string>
+    <string name="main_type_of_places"> : </string>
+    <string name="main_city">Ville : </string>
+    <string name="main_view_model_m">m</string>
+
+    <string name="get_out">Sortir</string>
+    <string name="meter"> m</string>
+    <string name="nbr_profiles_in">personnes à rencontrer</string>
+    <string name="send_like_info">Envoyez un like pour faire le premier pas</string>
+    <string name="age">ans</string>
+    <string name="about_me">À propos de moi</string>
+    <string name="close">Fermer</string>
+    <string name="my_passions">Mes passions</string>
+    <string name="map">Map</string>
+
+    <string name="dialog_text_icon_like">Voir le profil</string>
+    <string name="dialog_title_like">Vous avez reçu un Like</string>
+    <string name="dialog_text_like">Cette personne est intéressée par vous, donnez une réponse :)</string>
+    <string name="dialog_text_icon_match">Se rencontrer</string>
+    <string name="dialog_title_match">Match</string>
+    <string name="dialog_text_match">Félicitations! On vous souhaite une belle rencontre :)</string>
+    <string name="dialog_img_url">https://image2url.com/r2/default/images/1773531123512-51b3bfa7-07b0-4cf0-a962-4c1622a95d57.jpg</string>
+
+    <string name="messaging_like_received">Vos Like reçus en attente de réponse</string>
+    <string name="messaging_match_message">Vos Match et messages</string>
+</resources>

@@ -3,10 +3,10 @@ package com.app_will.geedrapplication.utils
 const val MY_PREF_KEY_FILENAME = "Prefs"
 const val MY_PREF_KEY_USERID = "UserId"
 
-const val USER_CHECK_IN_ID = "userCheckinId"
+const val USER_CHECK_IN_ID = "userCheckInId"
 const val USER_CHECK_IN_ID_LIKE = "6"
 
-const val USER_CHECK_IN_PROFILE_ROUTE = "/{userCheckinId}"
+const val USER_CHECK_IN_PROFILE_ROUTE = "/{userCheckInId}"
 const val USERS_CHECK_IN_ROUTE = "/{placeType}/{placeName}/{addressCity}"
 
 const val USER_CHECK_IN_UPDATED = "success"

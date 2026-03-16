@@ -103,7 +103,7 @@ fun MessagingContent(
             Column {
                 Spacer(modifier = Modifier.padding(10.dp))
                 Row {
-                    Spacer(modifier = Modifier.padding(4.dp))
+                    Spacer(modifier = Modifier.padding(8.dp))
                     Text(
                         text = context.getString(R.string.messaging_like_received),
                         color = MaterialTheme.colorScheme.secondary,
@@ -147,10 +147,10 @@ fun MessagingContent(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.padding(10.dp))
+                Spacer(modifier = Modifier.padding(6.dp))
                 Column {
                     Row {
-                        Spacer(modifier = Modifier.padding(4.dp))
+                        Spacer(modifier = Modifier.padding(8.dp))
                         Text(
                             text = context.getString(R.string.messaging_match_message),
                             color = MaterialTheme.colorScheme.secondary,

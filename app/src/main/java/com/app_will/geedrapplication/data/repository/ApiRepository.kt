@@ -26,16 +26,16 @@ class ApiRepository @Inject constructor(
     suspend fun getUsers(): Response<List<UserDto>> = apiInterface.getUsers()
 
     suspend fun getUser(
-        userCheckinId: Long
-    ): Response<List<UserDto>> = apiInterface.getUser(userId = userCheckinId)
+        userCheckInId: Long
+    ): Response<List<UserDto>> = apiInterface.getUser(userId = userCheckInId)
 
     suspend fun updateUserVisibility(
-        userCheckinId: Long,
-        userCheckinVisibility: UpdateUserDto
+        userCheckInId: Long,
+        userCheckInVisibility: UpdateUserDto
     ): Response<UserDto> =
         apiInterface.updateUserVisibility(
-            id = userCheckinId,
-            body = userCheckinVisibility
+            id = userCheckInId,
+            body = userCheckInVisibility
         )
 
     suspend fun getMessages(): Response<List<MessagesDto>> = apiInterface.getMessages()
