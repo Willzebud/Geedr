@@ -3,6 +3,7 @@ package com.app_will.geedrapplication.repository
 import com.app_will.geedrapplication.network.ApiInterface
 import com.app_will.geedrapplication.network.dto.MessagesDto
 import com.app_will.geedrapplication.network.dto.PlacesDto
+import com.app_will.geedrapplication.network.dto.UpdateLikeStatus
 import com.app_will.geedrapplication.network.dto.UpdateUserDto
 import com.app_will.geedrapplication.network.dto.UserDto
 import retrofit2.Response
@@ -38,5 +39,14 @@ class ApiRepository @Inject constructor(
         )
 
     suspend fun getMessages(): Response<List<MessagesDto>> = apiInterface.getMessages()
+
+    suspend fun updateLikeVisibility(
+        messageId: Long,
+        likeVisibility: UpdateLikeStatus
+    ): Response<MessagesDto> =
+        apiInterface.updateLikeVisibility(
+            id = messageId,
+            body = likeVisibility
+        )
 
 }

@@ -3,6 +3,8 @@ package com.app_will.geedrapplication.ui.usercheckinprofile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app_will.geedrapplication.R
+import com.app_will.geedrapplication.navigation.MainNavigation
+import com.app_will.geedrapplication.navigation.RootNavigation
 import com.app_will.geedrapplication.network.dto.UpdateUserDto
 import com.app_will.geedrapplication.repository.ApiRepository
 import com.app_will.geedrapplication.utils.UiEvent
@@ -40,6 +42,9 @@ class UserCheckinProfileViewModel @Inject constructor(
 
     private val _responseUserSharedFlow = MutableSharedFlow<UiEvent>()
     val responseUserStateFlow = _responseUserSharedFlow.asSharedFlow()
+
+    private val _navigateToScreenSharedFlow = MutableSharedFlow<MainNavigation>()
+    val navigateToScreenSharedFlow = _navigateToScreenSharedFlow.asSharedFlow()
 
     fun getUserCheckinProfil(
         checkinId: Long
@@ -94,6 +99,12 @@ class UserCheckinProfileViewModel @Inject constructor(
                     UiEvent.ShowToast(R.string.error_occurred)
                 )
             }
+        }
+    }
+
+    fun navigateToScreen(){
+        viewModelScope.launch {
+            _navigateToScreenSharedFlow.emit(MainNavigation.Messaging)
         }
     }
 }

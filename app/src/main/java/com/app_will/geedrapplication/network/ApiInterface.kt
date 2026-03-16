@@ -2,6 +2,7 @@ package com.app_will.geedrapplication.network
 
 import com.app_will.geedrapplication.network.dto.MessagesDto
 import com.app_will.geedrapplication.network.dto.PlacesDto
+import com.app_will.geedrapplication.network.dto.UpdateLikeStatus
 import com.app_will.geedrapplication.network.dto.UpdateUserDto
 import com.app_will.geedrapplication.network.dto.UserDto
 import retrofit2.Response
@@ -42,5 +43,9 @@ interface ApiInterface {
     suspend fun getMessages(
     ): Response<List<MessagesDto>>
 
-
+    @PATCH(ApiRoutes.PATCH_UPDATE_LIKE)
+    suspend fun updateLikeVisibility(
+        @Path("id") id: Long,
+        @Body body: UpdateLikeStatus
+    ): Response<MessagesDto>
 }

@@ -45,6 +45,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.app_will.geedrapplication.R
+import com.app_will.geedrapplication.navigation.MainNavigation
+import com.app_will.geedrapplication.navigation.RootNavigation
 import com.app_will.geedrapplication.ui.components.Dialog
 import com.app_will.geedrapplication.ui.theme.GeedrApplicationTheme
 import com.app_will.geedrapplication.utils.USER_CHECKIN_ID_LIKE
@@ -86,6 +88,14 @@ fun CheckinProfileScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        userCheckinProfileViewModel.navigateToScreenSharedFlow.collect {
+            navController.navigate(it.route) {
+                popUpTo(MainNavigation.UserCheckinProfil.route) { inclusive = true }
+            }
+        }
+    }
+
 
     CheckinProfileContent(
         context = context,
@@ -121,7 +131,8 @@ fun CheckinProfileScreen(
             )
             navController.popBackStack()
         },
-        onClickBackToUserCheckin = { navController.popBackStack() }
+        onClickBackToUserCheckin = { navController.popBackStack() },
+        onNavigateToMessaging = { userCheckinProfileViewModel.navigateToScreen() }
     )
 }
 
@@ -142,6 +153,7 @@ fun CheckinProfileContent(
     onLikeProfile: (Boolean) -> Unit,
     onDislikeProfile: (Boolean) -> Unit,
     onClickBackToUserCheckin: () -> Unit,
+    onNavigateToMessaging: () -> Unit
 
     ) {
     Scaffold(
@@ -332,7 +344,7 @@ fun CheckinProfileContent(
                         dialogType = context.getString(R.string.dialog_title_match),
                         userImg = context.getString(R.string.dialog_img_url),
                         dialogText = context.getString(R.string.dialog_text_match),
-                        onConfirmation = { },
+                        onConfirmation = { onNavigateToMessaging() },
                         dialogIconText = context.getString(R.string.dialog_text_icon_match),
                         onDismissRequest = {
                             isDialogOpen.value = false

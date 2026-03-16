@@ -11,6 +11,7 @@ object ApiRoutes {
     const val GET_MESSAGES = "messages"
 
     const val PATCH_UPDATE_USER = "users/{id}"
+    const val PATCH_UPDATE_LIKE = "messages/{id}"
 
 
 }
