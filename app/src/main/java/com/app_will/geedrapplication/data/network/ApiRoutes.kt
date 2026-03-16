@@ -1,4 +1,4 @@
-package com.app_will.geedrapplication.network
+package com.app_will.geedrapplication.data.network
 
 object ApiRoutes {
     const val BASE_URL = "http://10.0.2.2:3000/"

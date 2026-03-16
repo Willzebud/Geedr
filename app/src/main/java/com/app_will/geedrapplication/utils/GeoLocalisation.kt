@@ -3,7 +3,7 @@ package com.app_will.geedrapplication.utils
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.ui.platform.LocalContext
+import com.app_will.geedrapplication.R
 
 class GeoLocalisation(
     private val lat: Double,
@@ -31,23 +31,21 @@ class GeoLocalisation(
     }
 }
 
-fun actualGeoLocalisation(latitude: Double, longitude: Double): String {
+fun actualGeoLocalisation(context: Context, latitude: Double, longitude: Double): String {
 
     val userGeo = GeoLocalisation(43.3375293, 5.3923826)
     val placeGeo = GeoLocalisation(latitude, longitude)
 
     val distanceKm = userGeo.haversine(placeGeo)
 
-    return "${(distanceKm * 1000).toInt()} m"
+    return "${(distanceKm * 1000).toInt()} ${context.getString(R.string.meter)}"
 }
 
 fun openGoogleMap(
     context: Context,
 ) {
-
-    val gmmIntentUri = Uri.parse("google.navigation:q=43.332474,5.374459")
+    val gmmIntentUri = Uri.parse(GEO_URI_STRING)
     val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
 
     context.startActivity(mapIntent)
-
 }

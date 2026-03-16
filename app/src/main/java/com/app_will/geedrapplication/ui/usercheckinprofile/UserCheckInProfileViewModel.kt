@@ -1,11 +1,10 @@
-package com.app_will.geedrapplication.ui.messaging
+package com.app_will.geedrapplication.ui.usercheckinprofile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app_will.geedrapplication.R
 import com.app_will.geedrapplication.navigation.MainNavigation
-import com.app_will.geedrapplication.data.dto.MessagesDto
-import com.app_will.geedrapplication.data.dto.UpdateLikeStatus
+import com.app_will.geedrapplication.data.dto.UpdateUserDto
 import com.app_will.geedrapplication.data.repository.ApiRepository
 import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_400
 import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_404
@@ -21,37 +20,56 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-
 @HiltViewModel
-class MessagingViewModel @Inject constructor(
+class UserCheckInProfileViewModel @Inject constructor(
     private val apiRepository: ApiRepository
 ) : ViewModel() {
 
-    private val _messagesListStateFlow = MutableStateFlow<List<MessagesDto>>(emptyList())
-    val messageListStateFlow = _messagesListStateFlow.asStateFlow()
-
-    private val _navigateToScreen = MutableSharedFlow<String>()
-    val navigateToScreen = _navigateToScreen.asSharedFlow()
+    private val _userCheckInName = MutableStateFlow("")
+    val userCheckInName = _userCheckInName.asStateFlow()
+    private val _userCheckInAge = MutableStateFlow("")
+    val userCheckInAge = _userCheckInAge.asStateFlow()
+    private val _userCheckInGender = MutableStateFlow("")
+    val userCheckInGender = _userCheckInGender.asStateFlow()
+    private val _userCheckInSexualOrientation = MutableStateFlow("")
+    val userCheckInSexualOrientation = _userCheckInSexualOrientation.asStateFlow()
+    private val _userCheckInJob = MutableStateFlow("")
+    val userCheckInJob = _userCheckInJob.asStateFlow()
+    private val _userCheckInAboutMe = MutableStateFlow<List<String>>(emptyList())
+    val userCheckInAboutMe = _userCheckInAboutMe.asStateFlow()
+    private val _userCheckInImgProfile = MutableStateFlow("")
+    val userCheckInImgProfile = _userCheckInImgProfile.asStateFlow()
+    private val _userCheckInPassions = MutableStateFlow<List<String>>(emptyList())
+    val userCheckInPassions = _userCheckInPassions.asStateFlow()
 
     private val _responseUserSharedFlow = MutableSharedFlow<UiEvent>()
-    val responseUserSharedFlow = _responseUserSharedFlow.asSharedFlow()
+    val responseUserStateFlow = _responseUserSharedFlow.asSharedFlow()
 
-    init {
-        getMessages()
-    }
+    private val _navigateToScreenSharedFlow = MutableSharedFlow<MainNavigation>()
+    val navigateToScreenSharedFlow = _navigateToScreenSharedFlow.asSharedFlow()
 
-    private fun getMessages() {
+    fun getUserCheckInProfile(
+        checkInId: Long
+    ) {
+
         viewModelScope.launch {
-
             try {
-
                 val res = withContext(Dispatchers.IO) {
-                    apiRepository.getMessages()
+                    apiRepository.getUser(checkInId)
                 }
 
                 if (res.isSuccessful) {
-                    res.body()?.let { message ->
-                        _messagesListStateFlow.value = message
+                    res.body()?.let { listUser ->
+                        listUser.forEach { userDto ->
+                            _userCheckInName.value = userDto.userName
+                            _userCheckInAge.value = userDto.userAge.toString()
+                            _userCheckInGender.value = userDto.userGender
+                            _userCheckInSexualOrientation.value = userDto.userSexualOrientation
+                            _userCheckInJob.value = userDto.userJob
+                            _userCheckInAboutMe.value = userDto.userAboutMe
+                            _userCheckInImgProfile.value = userDto.userPicture
+                            _userCheckInPassions.value = userDto.userPassions
+                        }
                     }
                 } else {
                     when (res.code()) {
@@ -68,6 +86,7 @@ class MessagingViewModel @Inject constructor(
                         )
                     }
                 }
+
             } catch (e: Exception) {
                 _responseUserSharedFlow.emit(
                     UiEvent.ShowToast(R.string.error_occurred)
@@ -76,31 +95,22 @@ class MessagingViewModel @Inject constructor(
         }
     }
 
-    fun navigateToScreen(
-    ) {
-        viewModelScope.launch {
-            _navigateToScreen.emit("${MainNavigation.UserCheckInProfile.route}/6")
-        }
-    }
-
-
-    fun likeVisibility(
-        likeVisibility: Boolean
+    fun userCheckInProfileVisibility(
+        userCheckInId: Long,
+        userCheckInVisibility: Boolean
     ) {
         viewModelScope.launch {
             try {
                 val res = withContext(Dispatchers.IO) {
-                    apiRepository.updateLikeVisibility(
-                        messageId = 1,
-                        likeVisibility = UpdateLikeStatus(
-                            isLikeVisible = likeVisibility
+                    apiRepository.updateUserVisibility(
+                        userCheckinId = userCheckInId,
+                        userCheckinVisibility = UpdateUserDto(
+                            isUserVisible = userCheckInVisibility
                         )
                     )
                 }
 
-                if (res.isSuccessful) {
-                    getMessages()
-                } else {
+                if(!res.isSuccessful){
                     when (res.code()) {
                         API_RESPONSE_CODE_400 -> _responseUserSharedFlow.emit(
                             UiEvent.ShowToast(R.string.error_occurred)
@@ -122,4 +132,11 @@ class MessagingViewModel @Inject constructor(
             }
         }
     }
+
+    fun navigateToScreen(){
+        viewModelScope.launch {
+            _navigateToScreenSharedFlow.emit(MainNavigation.Messaging)
+        }
+    }
 }
+

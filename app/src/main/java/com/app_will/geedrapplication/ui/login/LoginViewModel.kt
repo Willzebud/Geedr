@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app_will.geedrapplication.R
 import com.app_will.geedrapplication.navigation.RootNavigation
-import com.app_will.geedrapplication.repository.ApiRepository
-import com.app_will.geedrapplication.utils.SharedPreferencesManager
+import com.app_will.geedrapplication.data.repository.ApiRepository
+import com.app_will.geedrapplication.data.sharedpreferences.SharedPreferencesManager
+import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_400
+import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_404
+import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_500
 import com.app_will.geedrapplication.utils.UiEvent
 import com.app_will.geedrapplication.utils.validateLogin
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,8 +32,8 @@ class LoginViewModel @Inject constructor(
     private val _isEnabledButtonStateFlow = MutableStateFlow(true)
     val isEnabledButtonStateFlow = _isEnabledButtonStateFlow.asStateFlow()
 
-    private val _responseUserStateFlow = MutableSharedFlow<UiEvent>()
-    val responseUserStateFlow = _responseUserStateFlow.asSharedFlow()
+    private val _responseUserSharedFlow = MutableSharedFlow<UiEvent>()
+    val responseUserSharedFlow = _responseUserSharedFlow.asSharedFlow()
 
 
     private val _navigateToMainSharedFlow = MutableSharedFlow<RootNavigation>()
@@ -51,7 +54,7 @@ class LoginViewModel @Inject constructor(
 
             if (!validation.isValid) {
                 validation.errorMessage?.let { errorMessage ->
-                    _responseUserStateFlow.emit(
+                    _responseUserSharedFlow.emit(
                         UiEvent.ShowToast(errorMessage)
                     )
                 }
@@ -61,26 +64,41 @@ class LoginViewModel @Inject constructor(
                 val res = withContext(Dispatchers.IO) {
                     apiRepository.login(userIdentifier.toLong(), userPassword)
                 }
+                if (res.isSuccessful) {
+                    val user = res.body()?.firstOrNull()
+                    val userId = user?.userId
 
-                val user = res.body()?.firstOrNull()
-                val userId = user?.userId
+                    if (userId != null) {
+                        myPref.createSession(userId)
 
-                if (userId != null) {
-                    myPref.createSession(userId)
+                        _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.authenticated_successful)
+                        )
 
-                    _responseUserStateFlow.emit(
-                        UiEvent.ShowToast(R.string.authenticated_successful)
-                    )
-
-                    _navigateToMainSharedFlow.emit(RootNavigation.Main)
+                        _navigateToMainSharedFlow.emit(RootNavigation.Main)
+                    } else {
+                        _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.login_screen_wrong_mail_password)
+                        )
+                    }
                 } else {
-                    _responseUserStateFlow.emit(
-                        UiEvent.ShowToast(R.string.login_screen_wrong_mail_password)
-                    )
+                    when (res.code()) {
+                        API_RESPONSE_CODE_400 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.error_occurred)
+                        )
+
+                        API_RESPONSE_CODE_404 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.api_response_404)
+                        )
+
+                        API_RESPONSE_CODE_500 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.api_response_500)
+                        )
+                    }
                 }
 
             } catch (e: Exception) {
-                _responseUserStateFlow.emit(
+                _responseUserSharedFlow.emit(
                     UiEvent.ShowToast(R.string.error_occurred)
                 )
             }

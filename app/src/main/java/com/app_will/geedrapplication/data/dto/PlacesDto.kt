@@ -1,9 +1,10 @@
-package com.app_will.geedrapplication.network.dto
+package com.app_will.geedrapplication.data.dto
 
 import com.squareup.moshi.Json
 
 data class PlacesDto (
-    val id: Long,
+    @Json(name = "id")
+    val id: String,
     @Json(name = "place_name")
     val placeName: String,
     @Json(name = "place_type")

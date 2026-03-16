@@ -1,7 +1,7 @@
 package com.app_will.geedrapplication.ui.usercheckinprofile
 
 import android.content.Context
-import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -34,70 +33,68 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.app_will.geedrapplication.R
 import com.app_will.geedrapplication.navigation.MainNavigation
-import com.app_will.geedrapplication.navigation.RootNavigation
 import com.app_will.geedrapplication.ui.components.Dialog
-import com.app_will.geedrapplication.ui.theme.GeedrApplicationTheme
-import com.app_will.geedrapplication.utils.USER_CHECKIN_ID_LIKE
-import com.app_will.geedrapplication.utils.USER_CHECKIN_UPDATED
+import com.app_will.geedrapplication.utils.USER_CHECK_IN_UPDATED
 import com.app_will.geedrapplication.utils.UiEvent
+import com.app_will.geedrapplication.utils.showToast
 
 @Composable
-fun CheckinProfileScreen(
+fun CheckInProfileScreen(
     userId: Long,
     navController: NavController,
-    userCheckinProfileViewModel: UserCheckinProfileViewModel
+    userCheckInProfileViewModel: UserCheckInProfileViewModel
 ) {
+    BackHandler(enabled = true) {
+    }
     val context = LocalContext.current
-    val userName by userCheckinProfileViewModel.userCheckinName.collectAsState()
-    val userAge by userCheckinProfileViewModel.userCheckinAge.collectAsState()
-    val userGender by userCheckinProfileViewModel.userCheckinGender.collectAsState()
-    val userSexualOrientation by userCheckinProfileViewModel.userCheckinSexualOrientation.collectAsState()
-    val userJob by userCheckinProfileViewModel.userCheckinJob.collectAsState()
-    val userAboutMe by userCheckinProfileViewModel.userCheckinAboutMe.collectAsState()
-    val userImgProfile by userCheckinProfileViewModel.userCheckinImgProfile.collectAsState()
-    val userPassions by userCheckinProfileViewModel.userCheckinPassions.collectAsState()
+    val userName by userCheckInProfileViewModel.userCheckInName.collectAsState()
+    val userAge by userCheckInProfileViewModel.userCheckInAge.collectAsState()
+    val userGender by userCheckInProfileViewModel.userCheckInGender.collectAsState()
+    val userSexualOrientation by userCheckInProfileViewModel.userCheckInSexualOrientation.collectAsState()
+    val userJob by userCheckInProfileViewModel.userCheckInJob.collectAsState()
+    val userAboutMe by userCheckInProfileViewModel.userCheckInAboutMe.collectAsState()
+    val userImgProfile by userCheckInProfileViewModel.userCheckInImgProfile.collectAsState()
+    val userPassions by userCheckInProfileViewModel.userCheckInPassions.collectAsState()
 
     val showDialog = remember { mutableStateOf(false) }
 
 
     LaunchedEffect(Unit) {
-        userCheckinProfileViewModel.getUserCheckinProfil(userId)
+        userCheckInProfileViewModel.getUserCheckInProfile(userId)
     }
 
     LaunchedEffect(Unit) {
-        userCheckinProfileViewModel.responseUserStateFlow.collect { event ->
+        userCheckInProfileViewModel.responseUserStateFlow.collect { event ->
             when (event) {
                 is UiEvent.ShowToast -> {
-                    Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+                    context.showToast(context, event.message)
                 }
 
-                else -> Toast.makeText(context, R.string.error_occurred, Toast.LENGTH_SHORT).show()
+                else -> context.showToast(context, R.string.error_occurred)
             }
         }
     }
 
     LaunchedEffect(Unit) {
-        userCheckinProfileViewModel.navigateToScreenSharedFlow.collect {
+        userCheckInProfileViewModel.navigateToScreenSharedFlow.collect {
             navController.navigate(it.route) {
-                popUpTo(MainNavigation.UserCheckinProfil.route) { inclusive = true }
+                popUpTo(MainNavigation.UserCheckInProfile.route) { inclusive = true }
             }
         }
     }
 
 
-    CheckinProfileContent(
+    CheckInProfileContent(
         context = context,
         userId = userId,
         userName = userName,
@@ -110,35 +107,45 @@ fun CheckinProfileScreen(
         userPassions = userPassions,
         isDialogOpen = showDialog,
         onLikeProfile = { userVisibility ->
-            userCheckinProfileViewModel.userCheckinProfileVisibility(
-                userCheckinId = userId,
-                userCheckinVisibility = userVisibility,
+            userCheckInProfileViewModel.userCheckInProfileVisibility(
+                userCheckInId = userId,
+                userCheckInVisibility = userVisibility,
             )
             navController.previousBackStackEntry?.savedStateHandle?.set(
-                USER_CHECKIN_UPDATED,
+                USER_CHECK_IN_UPDATED,
                 true
             )
             navController.popBackStack()
         },
         onDislikeProfile = { userVisibility ->
-            userCheckinProfileViewModel.userCheckinProfileVisibility(
-                userCheckinId = userId,
-                userCheckinVisibility = userVisibility,
+            userCheckInProfileViewModel.userCheckInProfileVisibility(
+                userCheckInId = userId,
+                userCheckInVisibility = userVisibility,
             )
             navController.previousBackStackEntry?.savedStateHandle?.set(
-                USER_CHECKIN_UPDATED,
+                USER_CHECK_IN_UPDATED,
                 true
             )
             navController.popBackStack()
         },
         onClickBackToUserCheckin = { navController.popBackStack() },
-        onNavigateToMessaging = { userCheckinProfileViewModel.navigateToScreen() }
+        onNavigateToMessaging = { userVisibility ->
+            userCheckInProfileViewModel.userCheckInProfileVisibility(
+                userCheckInId = userId,
+                userCheckInVisibility = userVisibility,
+            )
+            navController.previousBackStackEntry?.savedStateHandle?.set(
+                USER_CHECK_IN_UPDATED,
+                true
+            )
+            userCheckInProfileViewModel.navigateToScreen()
+        }
     )
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun CheckinProfileContent(
+fun CheckInProfileContent(
     userId: Long,
     context: Context,
     userName: String,
@@ -153,7 +160,7 @@ fun CheckinProfileContent(
     onLikeProfile: (Boolean) -> Unit,
     onDislikeProfile: (Boolean) -> Unit,
     onClickBackToUserCheckin: () -> Unit,
-    onNavigateToMessaging: () -> Unit
+    onNavigateToMessaging: (Boolean) -> Unit
 
     ) {
     Scaffold(
@@ -223,7 +230,7 @@ fun CheckinProfileContent(
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxSize(),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.FillWidth
                     )
 
                 }
@@ -247,7 +254,7 @@ fun CheckinProfileContent(
                     ) {
                         Text(
                             text = context.getString(R.string.close),
-                            fontSize = 20.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -276,15 +283,17 @@ fun CheckinProfileContent(
                     )
 
                 }
+                Spacer(modifier = Modifier.padding(10.dp))
                 Text(
                     text = context.getString(R.string.about_me),
                     fontSize = 22.sp,
                     modifier = Modifier
-                        .padding(20.dp)
+                        .padding(12.dp)
                 )
                 FlowRow(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(10.dp)
                 ) {
                     userAboutMe.forEach { itemsAboutMe ->
                         Box(
@@ -305,15 +314,17 @@ fun CheckinProfileContent(
 
                     }
                 }
+                Spacer(modifier = Modifier.padding(10.dp))
                 Text(
                     text = context.getString(R.string.my_passions),
                     fontSize = 22.sp,
                     modifier = Modifier
-                        .padding(20.dp)
+                        .padding(12.dp)
                 )
                 FlowRow(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(10.dp)
                 ) {
                     userPassions.forEach { passions ->
                         Box(
@@ -344,7 +355,7 @@ fun CheckinProfileContent(
                         dialogType = context.getString(R.string.dialog_title_match),
                         userImg = context.getString(R.string.dialog_img_url),
                         dialogText = context.getString(R.string.dialog_text_match),
-                        onConfirmation = { onNavigateToMessaging() },
+                        onConfirmation = { onNavigateToMessaging(false) },
                         dialogIconText = context.getString(R.string.dialog_text_icon_match),
                         onDismissRequest = {
                             isDialogOpen.value = false
@@ -356,12 +367,4 @@ fun CheckinProfileContent(
         }
     }
 
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    GeedrApplicationTheme {
-    }
 }

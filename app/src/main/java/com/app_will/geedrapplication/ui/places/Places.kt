@@ -1,7 +1,6 @@
 package com.app_will.geedrapplication.ui.places
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,14 +32,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.app_will.geedrapplication.R
-import com.app_will.geedrapplication.network.dto.PlacesDto
+import com.app_will.geedrapplication.data.dto.PlacesDto
 import com.app_will.geedrapplication.ui.components.ButtonMap
 import com.app_will.geedrapplication.ui.components.ProgressBar
 import com.app_will.geedrapplication.ui.components.TitleScreen
-import com.app_will.geedrapplication.utils.USER_CHECKIN_NUMBER
+import com.app_will.geedrapplication.utils.USER_CHECK_IN_NUMBER
 import com.app_will.geedrapplication.utils.UiEvent
 import com.app_will.geedrapplication.utils.actualGeoLocalisation
 import com.app_will.geedrapplication.utils.openGoogleMap
+import com.app_will.geedrapplication.utils.showToast
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -55,28 +55,31 @@ fun PlacesScreen(
     val places by placesViewModel.placesListStateFlow.collectAsState()
     val isProgressBarActiveStateFlow by placesViewModel.isProgressBarActiveStateFlow.collectAsState()
     val isRefreshing by placesViewModel.isRefreshingStateFlow.collectAsState()
+    val userCheckInNumber by placesViewModel.userCheckInActive.collectAsState()
 
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
 
-    val userCheckinNumberUpdated = navController.currentBackStackEntry
+    val userCheckInNumberUpdated = navController.currentBackStackEntry
         ?.savedStateHandle
-        ?.getStateFlow(USER_CHECKIN_NUMBER, 10)
+        ?.getStateFlow<Int?>(USER_CHECK_IN_NUMBER, null)
         ?.collectAsState()
+
+
 
     LaunchedEffect(Unit) {
         placesViewModel.responseUserStateFlow.collect { event ->
             when (event) {
                 is UiEvent.ShowToast -> {
-                    Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+                    context.showToast(context, event.message)
                 }
 
-                else -> Toast.makeText(context, R.string.error_occurred, Toast.LENGTH_SHORT).show()
+                else -> context.showToast(context, R.string.error_occurred)
             }
         }
     }
 
     LaunchedEffect(Unit) {
-        placesViewModel.navigateToCheckinProfileSharedFlow.collect {
+        placesViewModel.navigateToCheckInProfilesSharedFlow.collect {
             navController.navigate(it)
         }
     }
@@ -87,10 +90,10 @@ fun PlacesScreen(
         context = context,
         isProgressBarActive = isProgressBarActiveStateFlow,
         swipeRefreshState = swipeRefreshState,
-        userCheckinNumber = userCheckinNumberUpdated!!.value,
+        userCheckInNumber = userCheckInNumberUpdated?.value ?: userCheckInNumber,
         onRefresh = { placesViewModel.swipeRefresh() },
-        onNavigateCheckinProfile = { placeType, placeName, addressCity ->
-            placesViewModel.navigateToUsersCheckinProfile(
+        onNavigateCheckInProfile = { placeType, placeName, addressCity ->
+            placesViewModel.navigateToUsersCheckIn(
                 placeType,
                 placeName,
                 addressCity
@@ -106,9 +109,9 @@ fun PlacesContent(
     context: Context,
     isProgressBarActive: Boolean,
     swipeRefreshState: SwipeRefreshState,
-    userCheckinNumber: Int,
+    userCheckInNumber: Int,
     onRefresh: () -> Unit,
-    onNavigateCheckinProfile: (String, String, String) -> Unit
+    onNavigateCheckInProfile: (String, String, String) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -183,7 +186,7 @@ fun PlacesContent(
                                 .padding(6.dp)
                         ) {
                             Text(
-                                text = "${places.userCheckin + userCheckinNumber}",
+                                text = "$userCheckInNumber",
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Icon(
@@ -201,7 +204,7 @@ fun PlacesContent(
                                     .width(35.dp)
                                     .height(35.dp),
                                 onClick = {
-                                    onNavigateCheckinProfile(
+                                    onNavigateCheckInProfile(
                                         places.placeType,
                                         places.placeName,
                                         places.addressCity
@@ -231,8 +234,9 @@ fun PlacesContent(
                                 ) { openGoogleMap(context) }
                                 Text(
                                     text = actualGeoLocalisation(
+                                        context,
                                         places.placeLatitude,
-                                        places.placeLongitude
+                                        places.placeLongitude,
                                     ),
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.secondary,

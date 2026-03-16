@@ -3,8 +3,11 @@ package com.app_will.geedrapplication.ui.userprofil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app_will.geedrapplication.R
-import com.app_will.geedrapplication.repository.ApiRepository
-import com.app_will.geedrapplication.utils.SharedPreferencesManager
+import com.app_will.geedrapplication.data.repository.ApiRepository
+import com.app_will.geedrapplication.data.sharedpreferences.SharedPreferencesManager
+import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_400
+import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_404
+import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_500
 import com.app_will.geedrapplication.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,29 +23,29 @@ import javax.inject.Inject
 class UserProfileViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val myPref: SharedPreferencesManager
-): ViewModel() {
-    private val _userCheckinName = MutableStateFlow("")
-    val userCheckinName = _userCheckinName.asStateFlow()
-    private val _userCheckinAge = MutableStateFlow("")
-    val userCheckinAge = _userCheckinAge.asStateFlow()
-    private val _userCheckinGender = MutableStateFlow("")
-    val userCheckinGender = _userCheckinGender.asStateFlow()
-    private val _userCheckinSexualOrientation = MutableStateFlow("")
-    val userCheckinSexualOrientation = _userCheckinSexualOrientation.asStateFlow()
-    private val _userCheckinJob = MutableStateFlow("")
-    val userCheckinJob = _userCheckinJob.asStateFlow()
-    private val _userCheckinAboutMe = MutableStateFlow<List<String>>(emptyList())
-    val userCheckinAboutMe = _userCheckinAboutMe.asStateFlow()
-    private val _userCheckinImgProfile = MutableStateFlow("")
-    val userCheckinImgProfile = _userCheckinImgProfile.asStateFlow()
-    private val _userCheckinPassions = MutableStateFlow<List<String>>(emptyList())
-    val userCheckinPassions = _userCheckinPassions.asStateFlow()
+) : ViewModel() {
+    private val _userName = MutableStateFlow("")
+    val userName = _userName.asStateFlow()
+    private val _userAge = MutableStateFlow("")
+    val userAge = _userAge.asStateFlow()
+    private val _userGender = MutableStateFlow("")
+    val userGender = _userGender.asStateFlow()
+    private val _userSexualOrientation = MutableStateFlow("")
+    val userSexualOrientation = _userSexualOrientation.asStateFlow()
+    private val _userJob = MutableStateFlow("")
+    val userJob = _userJob.asStateFlow()
+    private val _userAboutMe = MutableStateFlow<List<String>>(emptyList())
+    val userAboutMe = _userAboutMe.asStateFlow()
+    private val _userImgProfile = MutableStateFlow("")
+    val userImgProfile = _userImgProfile.asStateFlow()
+    private val _userPassions = MutableStateFlow<List<String>>(emptyList())
+    val userPassions = _userPassions.asStateFlow()
 
     private val _responseUserSharedFlow = MutableSharedFlow<UiEvent>()
-    val responseUserStateFlow = _responseUserSharedFlow.asSharedFlow()
+    val responseUserSharedFlow = _responseUserSharedFlow.asSharedFlow()
 
 
-    fun getUserProfil(
+    fun getUserProfile(
     ) {
 
         viewModelScope.launch {
@@ -54,15 +57,29 @@ class UserProfileViewModel @Inject constructor(
                 if (res.isSuccessful) {
                     res.body()?.let { listUser ->
                         listUser.forEach { userDto ->
-                            _userCheckinName.value = userDto.userName
-                            _userCheckinAge.value = userDto.userAge.toString()
-                            _userCheckinGender.value = userDto.userGender
-                            _userCheckinSexualOrientation.value = userDto.userSexualOrientation
-                            _userCheckinJob.value = userDto.userJob
-                            _userCheckinAboutMe.value = userDto.userAboutMe
-                            _userCheckinImgProfile.value = userDto.userPicture
-                            _userCheckinPassions.value = userDto.userPassions
+                            _userName.value = userDto.userName
+                            _userAge.value = userDto.userAge.toString()
+                            _userGender.value = userDto.userGender
+                            _userSexualOrientation.value = userDto.userSexualOrientation
+                            _userJob.value = userDto.userJob
+                            _userAboutMe.value = userDto.userAboutMe
+                            _userImgProfile.value = userDto.userPicture
+                            _userPassions.value = userDto.userPassions
                         }
+                    }
+                } else {
+                    when (res.code()) {
+                        API_RESPONSE_CODE_400 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.error_occurred)
+                        )
+
+                        API_RESPONSE_CODE_404 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.api_response_404)
+                        )
+
+                        API_RESPONSE_CODE_500 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.api_response_500)
+                        )
                     }
                 }
 

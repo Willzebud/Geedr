@@ -2,8 +2,8 @@ package com.app_will.geedrapplication.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.app_will.geedrapplication.network.ApiInterface
-import com.app_will.geedrapplication.network.ApiRoutes
+import com.app_will.geedrapplication.data.network.ApiInterface
+import com.app_will.geedrapplication.data.network.ApiRoutes
 import com.app_will.geedrapplication.utils.MY_PREF_KEY_FILENAME
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

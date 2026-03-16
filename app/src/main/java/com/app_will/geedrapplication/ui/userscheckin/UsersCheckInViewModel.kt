@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app_will.geedrapplication.R
 import com.app_will.geedrapplication.navigation.MainNavigation
-import com.app_will.geedrapplication.network.dto.UserDto
-import com.app_will.geedrapplication.repository.ApiRepository
+import com.app_will.geedrapplication.data.dto.UserDto
+import com.app_will.geedrapplication.data.repository.ApiRepository
+import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_400
+import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_404
+import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_500
 import com.app_will.geedrapplication.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +22,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class UsersCheckinViewModel @Inject constructor(
+class UsersCheckInViewModel @Inject constructor(
     private val apiRepository: ApiRepository
 ) : ViewModel() {
 
@@ -28,10 +31,10 @@ class UsersCheckinViewModel @Inject constructor(
     private val _isRefreshingStateFlow = MutableStateFlow(false)
     val isRefreshingStateFlow = _isRefreshingStateFlow.asStateFlow()
 
-    private val _userCheckinFilterStateFlow = MutableStateFlow<List<UserDto>>(emptyList())
-    val userCheckinFilterStateFlow = _userCheckinFilterStateFlow.asStateFlow()
-    private val _userCheckinActive = MutableStateFlow(0)
-    val userCheckinActive = _userCheckinActive.asStateFlow()
+    private val _userCheckInFilterStateFlow = MutableStateFlow<List<UserDto>>(emptyList())
+    val userCheckInFilterStateFlow = _userCheckInFilterStateFlow.asStateFlow()
+    private val _userCheckInActive = MutableStateFlow(0)
+    val userCheckInActive = _userCheckInActive.asStateFlow()
 
 
     private val _responseUserSharedFlow = MutableSharedFlow<UiEvent>()
@@ -40,11 +43,8 @@ class UsersCheckinViewModel @Inject constructor(
     private val _navigateToScreen = MutableSharedFlow<String>()
     val navigateToScreen = _navigateToScreen.asSharedFlow()
 
-    private val _usersListStateFlow = MutableStateFlow<List<UserDto>>(emptyList())
-    val usersListStateFlow = _usersListStateFlow.asStateFlow()
-
     fun getUsers() {
-        _userCheckinActive.value = 0
+        _userCheckInActive.value = 0
         _isProgressBarActiveStateFlow.value = true
         viewModelScope.launch {
             try {
@@ -53,21 +53,32 @@ class UsersCheckinViewModel @Inject constructor(
                 }
 
                 if (res.isSuccessful) {
-                    _usersListStateFlow.value = res.body().orEmpty()
+                    val userCheckinList = res.body().orEmpty()
 
-                    val userCheckinList = _usersListStateFlow.value
-                    _userCheckinFilterStateFlow.value = userCheckinList.filter { user ->
+                    _userCheckInFilterStateFlow.value = userCheckinList.filter { user ->
                         user.isUserCheckin && user.isUserVisible
                     }
 
-
-
                     userCheckinList.forEach { user ->
                         if (user.isUserVisible) {
-                            _userCheckinActive.value += 1
+                            _userCheckInActive.value += 1
                         }
                     }
 
+                } else {
+                    when (res.code()) {
+                        API_RESPONSE_CODE_400 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.error_occurred)
+                        )
+
+                        API_RESPONSE_CODE_404 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.api_response_404)
+                        )
+
+                        API_RESPONSE_CODE_500 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.api_response_500)
+                        )
+                    }
                 }
 
             } catch (e: Exception) {
@@ -89,11 +100,11 @@ class UsersCheckinViewModel @Inject constructor(
         }
     }
 
-    fun navigateToScreen(
+    fun navigateToUserCheckInProfileScreen(
         userId: String
     ) {
         viewModelScope.launch {
-            _navigateToScreen.emit("${MainNavigation.UserCheckinProfil.route}/$userId")
+            _navigateToScreen.emit("${MainNavigation.UserCheckInProfile.route}/$userId")
         }
 
     }

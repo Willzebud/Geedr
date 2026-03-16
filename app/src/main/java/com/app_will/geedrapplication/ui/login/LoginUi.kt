@@ -1,6 +1,5 @@
 package com.app_will.geedrapplication.ui.login
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +27,7 @@ import com.app_will.geedrapplication.ui.components.ProgressBar
 import com.app_will.geedrapplication.ui.components.TextField
 import com.app_will.geedrapplication.ui.components.TitleApp
 import com.app_will.geedrapplication.utils.UiEvent
+import com.app_will.geedrapplication.utils.showToast
 
 @Composable
 fun LoginScreen(
@@ -41,12 +41,12 @@ fun LoginScreen(
     val isButtonEnabled by loginViewModel.isEnabledButtonStateFlow.collectAsState()
 
     LaunchedEffect(Unit) {
-        loginViewModel.responseUserStateFlow.collect { event ->
+        loginViewModel.responseUserSharedFlow.collect { event ->
             when (event) {
                 is UiEvent.ShowToast -> {
-                    Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+                    context.showToast(context, event.message)
                 }
-                else -> Toast.makeText(context, R.string.error_occurred, Toast.LENGTH_SHORT).show()
+                else -> context.showToast(context, R.string.error_occurred)
             }
         }
     }

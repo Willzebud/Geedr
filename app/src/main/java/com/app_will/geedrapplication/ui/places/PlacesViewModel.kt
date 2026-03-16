@@ -1,13 +1,14 @@
 package com.app_will.geedrapplication.ui.places
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app_will.geedrapplication.R
 import com.app_will.geedrapplication.navigation.MainNavigation
-import com.app_will.geedrapplication.navigation.RootNavigation
-import com.app_will.geedrapplication.network.dto.PlacesDto
-import com.app_will.geedrapplication.repository.ApiRepository
+import com.app_will.geedrapplication.data.dto.PlacesDto
+import com.app_will.geedrapplication.data.repository.ApiRepository
+import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_400
+import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_404
+import com.app_will.geedrapplication.utils.API_RESPONSE_CODE_500
 import com.app_will.geedrapplication.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -36,33 +37,79 @@ class PlacesViewModel @Inject constructor(
     private val _responseUserSharedFlow = MutableSharedFlow<UiEvent>()
     val responseUserStateFlow = _responseUserSharedFlow.asSharedFlow()
 
-    private val _navigateToCheckinProfileSharedFlow = MutableSharedFlow<String>()
-    val navigateToCheckinProfileSharedFlow = _navigateToCheckinProfileSharedFlow.asSharedFlow()
+    private val _navigateToCheckInProfilesSharedFlow = MutableSharedFlow<String>()
+    val navigateToCheckInProfilesSharedFlow = _navigateToCheckInProfilesSharedFlow.asSharedFlow()
+
+    private val _userCheckInActive = MutableStateFlow(0)
+    val userCheckInActive = _userCheckInActive.asStateFlow()
 
 
     init {
         getPlaces()
     }
 
-    private fun getPlaces() {
-
+    fun getPlaces() {
         viewModelScope.launch {
             _isProgressBarActiveStateFlow.value = true
 
             try {
-                val res = withContext(Dispatchers.IO) {
+                val placesResponse = withContext(Dispatchers.IO) {
                     apiRepository.getPlaces()
                 }
 
-                if (res.isSuccessful) {
-                    _placesListStateFlow.value = res.body().orEmpty()
+                if (placesResponse.isSuccessful) {
+                    _placesListStateFlow.value = placesResponse.body().orEmpty()
+                } else {
+                    when (placesResponse.code()) {
+                        API_RESPONSE_CODE_400 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.error_occurred)
+                        )
+
+                        API_RESPONSE_CODE_404 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.api_response_404)
+                        )
+
+                        API_RESPONSE_CODE_500 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.api_response_500)
+                        )
+                    }
                 }
 
+                val usersResponse = withContext(Dispatchers.IO) {
+                    apiRepository.getUsers()
+                }
+
+                if (usersResponse.isSuccessful) {
+                    val users = usersResponse.body().orEmpty()
+
+                    _userCheckInActive.value = 0
+
+                    users.forEach { user ->
+                        if (user.isUserVisible) {
+                            _userCheckInActive.value += 1
+                        }
+                    }
+                } else {
+                    when (usersResponse.code()) {
+                        API_RESPONSE_CODE_400 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.error_occurred)
+                        )
+
+                        API_RESPONSE_CODE_404 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.api_response_404)
+                        )
+
+                        API_RESPONSE_CODE_500 -> _responseUserSharedFlow.emit(
+                            UiEvent.ShowToast(R.string.api_response_500)
+                        )
+                    }
+                }
             } catch (e: Exception) {
                 _responseUserSharedFlow.emit(
                     UiEvent.ShowToast(R.string.error_occurred)
                 )
             }
+
             _isProgressBarActiveStateFlow.value = false
         }
     }
@@ -77,15 +124,15 @@ class PlacesViewModel @Inject constructor(
         }
     }
 
-    fun navigateToUsersCheckinProfile(
+    fun navigateToUsersCheckIn(
         placeType: String,
         placeName: String,
         addressCity: String,
     ){
         viewModelScope.launch {
-            _navigateToCheckinProfileSharedFlow
+            _navigateToCheckInProfilesSharedFlow
                 .emit(
-                    "${MainNavigation.CheckinUser.route}/$placeType/$placeName/$addressCity"
+                    "${MainNavigation.CheckInUser.route}/$placeType/$placeName/$addressCity"
                 )
         }
     }

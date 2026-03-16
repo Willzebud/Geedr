@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,36 +26,46 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.app_will.geedrapplication.R
+import com.app_will.geedrapplication.utils.UiEvent
+import com.app_will.geedrapplication.utils.showToast
 
 @Composable
 fun UserProfileScreen(
-    navController: NavController,
     userProfileViewModel: UserProfileViewModel
 ){
     val context = LocalContext.current
-    val userName by userProfileViewModel.userCheckinName.collectAsState()
-    val userAge by userProfileViewModel.userCheckinAge.collectAsState()
-    val userGender by userProfileViewModel.userCheckinGender.collectAsState()
-    val userSexualOrientation by userProfileViewModel.userCheckinSexualOrientation.collectAsState()
-    val userJob by userProfileViewModel.userCheckinJob.collectAsState()
-    val userAboutMe by userProfileViewModel.userCheckinAboutMe.collectAsState()
-    val userImgProfile by userProfileViewModel.userCheckinImgProfile.collectAsState()
-    val userPassions by userProfileViewModel.userCheckinPassions.collectAsState()
+    val userName by userProfileViewModel.userName.collectAsState()
+    val userAge by userProfileViewModel.userAge.collectAsState()
+    val userGender by userProfileViewModel.userGender.collectAsState()
+    val userSexualOrientation by userProfileViewModel.userSexualOrientation.collectAsState()
+    val userJob by userProfileViewModel.userJob.collectAsState()
+    val userAboutMe by userProfileViewModel.userAboutMe.collectAsState()
+    val userImgProfile by userProfileViewModel.userImgProfile.collectAsState()
+    val userPassions by userProfileViewModel.userPassions.collectAsState()
 
     BackHandler(enabled = true) {
     }
 
     LaunchedEffect(Unit) {
-        userProfileViewModel.getUserProfil()
+        userProfileViewModel.responseUserSharedFlow.collect { event ->
+            when (event) {
+                is UiEvent.ShowToast -> {
+                    context.showToast(context, event.message)
+                }
+                else -> context.showToast(context, R.string.error_occurred)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        userProfileViewModel.getUserProfile()
     }
 
     UserProfileContent(
@@ -151,15 +160,17 @@ fun UserProfileContent(
                 )
 
             }
+            Spacer(modifier = Modifier.padding(10.dp))
             Text(
                 text = context.getString(R.string.about_me),
                 fontSize = 22.sp,
                 modifier = Modifier
-                    .padding(20.dp)
+                    .padding(12.dp)
             )
             FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(10.dp)
             ) {
                 userAboutMe.forEach { itemsAboutMe ->
 
@@ -181,15 +192,17 @@ fun UserProfileContent(
 
                 }
             }
+            Spacer(modifier = Modifier.padding(10.dp))
             Text(
                 text = context.getString(R.string.my_passions),
                 fontSize = 22.sp,
                 modifier = Modifier
-                    .padding(20.dp)
+                    .padding(12.dp)
             )
             FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(10.dp)
             ) {
                 userPassions.forEach { passions ->
 
@@ -208,7 +221,6 @@ fun UserProfileContent(
                                 .padding(10.dp)
                         )
                     }
-
                 }
             }
         }

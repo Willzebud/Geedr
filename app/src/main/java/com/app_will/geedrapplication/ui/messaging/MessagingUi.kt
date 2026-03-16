@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,44 +17,34 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.app_will.geedrapplication.R
-import com.app_will.geedrapplication.network.dto.MessagesDto
-import com.app_will.geedrapplication.ui.theme.GeedrApplicationTheme
+import com.app_will.geedrapplication.data.dto.MessagesDto
 import com.app_will.geedrapplication.utils.NOTIFICATION_NBR
-import kotlin.reflect.jvm.internal.impl.descriptors.Visibilities.Local
+import com.app_will.geedrapplication.utils.UiEvent
+import com.app_will.geedrapplication.utils.showToast
 
 @Composable
 fun MessagingScreen(
@@ -63,10 +52,20 @@ fun MessagingScreen(
     messagingViewModel: MessagingViewModel
 ) {
     val context = LocalContext.current
-    val messagesList by messagingViewModel.messageListStateFlow.collectAsState()
-
+    val messagesUsersList by messagingViewModel.messageListStateFlow.collectAsState()
 
     BackHandler(enabled = true) {
+    }
+
+    LaunchedEffect(Unit) {
+        messagingViewModel.responseUserSharedFlow.collect { event ->
+            when (event) {
+                is UiEvent.ShowToast -> {
+                    context.showToast(context, event.message)
+                }
+                else -> context.showToast(context, R.string.error_occurred)
+            }
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -77,7 +76,7 @@ fun MessagingScreen(
 
     MessagingContent(
         context = context,
-        messagesList = messagesList,
+        messagesUsersList = messagesUsersList,
         onClickNavigateToProfile = {
             messagingViewModel.likeVisibility(true)
             messagingViewModel.navigateToScreen()
@@ -86,10 +85,11 @@ fun MessagingScreen(
     )
 }
 
+
 @Composable
 fun MessagingContent(
     context: Context,
-    messagesList: List<MessagesDto>,
+    messagesUsersList: List<MessagesDto>,
     onClickNavigateToProfile: () -> Unit
 ) {
 
@@ -97,33 +97,15 @@ fun MessagingContent(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-        ) {
-            TextButton(
-                modifier = Modifier
-                    .padding(10.dp)
-                    .align(Alignment.TopEnd),
-                onClick = { }
-            ) {
-                Text(
-                    text = context.getString(R.string.close),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
         Column(
             modifier = Modifier
         ) {
             Column {
+                Spacer(modifier = Modifier.padding(10.dp))
                 Row {
                     Spacer(modifier = Modifier.padding(4.dp))
                     Text(
-                        text = "Likes reçus en attente de votre réponse",
+                        text = context.getString(R.string.messaging_like_received),
                         color = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier
                     )
@@ -132,7 +114,7 @@ fun MessagingContent(
                 Row {
                     Spacer(modifier = Modifier.padding(4.dp))
                     LazyRow {
-                        items(items = messagesList) { message ->
+                        items(items = messagesUsersList) { message ->
                             Box(
                                 modifier = Modifier
                                     .height(80.dp)
@@ -164,21 +146,20 @@ fun MessagingContent(
                             }
                         }
                     }
-
                 }
-                Spacer(modifier = Modifier.padding(20.dp))
+                Spacer(modifier = Modifier.padding(10.dp))
                 Column {
                     Row {
                         Spacer(modifier = Modifier.padding(4.dp))
                         Text(
-                            text = "Vos Match et message",
+                            text = context.getString(R.string.messaging_match_message),
                             color = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier
                         )
                     }
                     Spacer(modifier = Modifier.padding(4.dp))
                     LazyColumn {
-                        items(items = messagesList) { message ->
+                        items(items = messagesUsersList) { message ->
                             if (message.isVisible) {
                                 Row(
                                     modifier = Modifier
@@ -238,12 +219,8 @@ fun MessagingContent(
                                     strokeWidth = size.height
                                 )
                             }
-
                         }
-
                     }
-
-
                 }
             }
         }

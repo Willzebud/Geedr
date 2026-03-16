@@ -1,8 +1,7 @@
 package com.app_will.geedrapplication.ui.userscheckin
 
 import android.content.Context
-import android.widget.Toast
-import androidx.compose.foundation.background
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,8 +17,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,9 +26,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,82 +41,84 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.app_will.geedrapplication.R
-import com.app_will.geedrapplication.network.dto.UserDto
+import com.app_will.geedrapplication.data.dto.UserDto
 import com.app_will.geedrapplication.ui.components.Dialog
 import com.app_will.geedrapplication.ui.components.ProgressBar
-import com.app_will.geedrapplication.utils.USER_CHECKIN_ID_LIKE
-import com.app_will.geedrapplication.utils.USER_CHECKIN_NUMBER
-import com.app_will.geedrapplication.utils.USER_CHECKIN_UPDATED
+import com.app_will.geedrapplication.utils.USER_CHECK_IN_ID_LIKE
+import com.app_will.geedrapplication.utils.USER_CHECK_IN_NUMBER
+import com.app_will.geedrapplication.utils.USER_CHECK_IN_UPDATED
 import com.app_will.geedrapplication.utils.UiEvent
+import com.app_will.geedrapplication.utils.showToast
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
-fun UsersCheckinScreen(
+fun UsersCheckInScreen(
     placeName: String,
     placeType: String,
     addressCity: String,
     navController: NavController,
-    usersCheckinViewModel: UsersCheckinViewModel,
+    usersCheckInViewModel: UsersCheckInViewModel,
     isDialogOpen: MutableState<Boolean>,
 ) {
+    BackHandler(enabled = true) {
+    }
     val context = LocalContext.current
-    val isProgressBarActive by usersCheckinViewModel.isProgressBarActiveStateFlow.collectAsState()
-    val isRefreshing by usersCheckinViewModel.isRefreshingStateFlow.collectAsState()
-    val usersCheckin by usersCheckinViewModel.userCheckinFilterStateFlow.collectAsState()
-    val userCheckinNumber by usersCheckinViewModel.userCheckinActive.collectAsState()
+    val isProgressBarActive by usersCheckInViewModel.isProgressBarActiveStateFlow.collectAsState()
+    val isRefreshing by usersCheckInViewModel.isRefreshingStateFlow.collectAsState()
+    val usersCheckIn by usersCheckInViewModel.userCheckInFilterStateFlow.collectAsState()
+    val userCheckInNumber by usersCheckInViewModel.userCheckInActive.collectAsState()
 
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
 
-    val userCheckinUpdated = navController.currentBackStackEntry
+    val userCheckInUpdated = navController.currentBackStackEntry
         ?.savedStateHandle
-        ?.getStateFlow(USER_CHECKIN_UPDATED, false)
+        ?.getStateFlow(USER_CHECK_IN_UPDATED, false)
         ?.collectAsState()
 
-    LaunchedEffect(userCheckinUpdated) {
-        usersCheckinViewModel.getUsers()
+    LaunchedEffect(userCheckInUpdated) {
+        usersCheckInViewModel.getUsers()
     }
 
     LaunchedEffect(Unit) {
-        usersCheckinViewModel.responseUserStateFlow.collect { event ->
+        usersCheckInViewModel.responseUserStateFlow.collect { event ->
             when (event) {
                 is UiEvent.ShowToast -> {
-                    Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
+                    context.showToast(context, event.message)
                 }
-
-                else -> Toast.makeText(context, R.string.error_occurred, Toast.LENGTH_SHORT).show()
+                else -> context.showToast(context, R.string.error_occurred)
             }
         }
     }
 
 
     LaunchedEffect(Unit) {
-        usersCheckinViewModel.navigateToScreen.collect { checkinProfil ->
-            navController.navigate(checkinProfil)
+        usersCheckInViewModel.navigateToScreen.collect { checkInProfile ->
+            navController.navigate(checkInProfile)
         }
     }
 
-    UsersCheckinContent(
+    UsersCheckInContent(
         placeName = placeName,
         placeType = placeType,
         addressCity = addressCity,
-        nbrUserCheckin = userCheckinNumber,
+        nbrUserCheckIn = userCheckInNumber,
         context = context,
-        userProfile = usersCheckin,
+        userCheckInProfiles = usersCheckIn,
         isDialogOpen = isDialogOpen,
         isProgressBarActive = isProgressBarActive,
         swipeRefreshState = swipeRefreshState,
-        onRefresh = { usersCheckinViewModel.swipeRefresh() },
+        onRefresh = { usersCheckInViewModel.swipeRefresh() },
         onClickBackToPlace = {
             navController.previousBackStackEntry?.savedStateHandle?.set(
-                USER_CHECKIN_NUMBER,
-                userCheckinNumber
+                USER_CHECK_IN_NUMBER,
+                userCheckInNumber
             )
             navController.popBackStack()
         },
-        onNavigateToCheckinProfil = { userId ->
-            usersCheckinViewModel.navigateToScreen(userId)
+        onNavigateToUserCheckInProfile = { userId ->
+            usersCheckInViewModel.navigateToUserCheckInProfileScreen(userId)
         }
     )
 
@@ -131,19 +127,19 @@ fun UsersCheckinScreen(
 
 
 @Composable
-fun UsersCheckinContent(
+fun UsersCheckInContent(
     placeType: String,
     placeName: String,
     addressCity: String,
-    nbrUserCheckin: Int,
+    nbrUserCheckIn: Int,
     context: Context,
     isDialogOpen: MutableState<Boolean>,
-    userProfile: List<UserDto>,
+    userCheckInProfiles: List<UserDto>,
     isProgressBarActive: Boolean,
     swipeRefreshState: SwipeRefreshState,
     onRefresh: () -> Unit,
     onClickBackToPlace: () -> Unit,
-    onNavigateToCheckinProfil: (String) -> Unit,
+    onNavigateToUserCheckInProfile: (String) -> Unit,
 ) {
 
     Column(
@@ -205,8 +201,8 @@ fun UsersCheckinContent(
             ) {
                 Text(
                     text = context.getString(R.string.get_out),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -221,7 +217,7 @@ fun UsersCheckinContent(
                 verticalArrangement = Arrangement.SpaceEvenly,
             ) {
                 Text(
-                    text = "$nbrUserCheckin ${context.getString(R.string.nbr_profiles_in)}",
+                    text = "$nbrUserCheckIn ${context.getString(R.string.nbr_profiles_in)}",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
@@ -245,7 +241,7 @@ fun UsersCheckinContent(
                         modifier = Modifier
                             .padding(4.dp),
                     ) {
-                        items(items = userProfile) { userProfile ->
+                        items(items = userCheckInProfiles) { userProfile ->
                             Row(
                                 modifier = Modifier
                                     .padding(6.dp)
@@ -260,7 +256,7 @@ fun UsersCheckinContent(
                                     modifier = Modifier
                                         .height(170.dp)
                                         .width(150.dp)
-                                        .clickable { onNavigateToCheckinProfil(userProfile.userId) }
+                                        .clickable { onNavigateToUserCheckInProfile(userProfile.userId) }
 
                                 ) {
                                     AsyncImage(
@@ -306,7 +302,7 @@ fun UsersCheckinContent(
                         userImg = context.getString(R.string.dialog_img_url),
                         dialogText = context.getString(R.string.dialog_text_like),
                         onConfirmation = {
-                            onNavigateToCheckinProfil(USER_CHECKIN_ID_LIKE)
+                            onNavigateToUserCheckInProfile(USER_CHECK_IN_ID_LIKE)
                             isDialogOpen.value = false
                         },
                         dialogIconText = context.getString(R.string.dialog_text_icon_like),

@@ -1,11 +1,11 @@
-package com.app_will.geedrapplication.repository
+package com.app_will.geedrapplication.data.repository
 
-import com.app_will.geedrapplication.network.ApiInterface
-import com.app_will.geedrapplication.network.dto.MessagesDto
-import com.app_will.geedrapplication.network.dto.PlacesDto
-import com.app_will.geedrapplication.network.dto.UpdateLikeStatus
-import com.app_will.geedrapplication.network.dto.UpdateUserDto
-import com.app_will.geedrapplication.network.dto.UserDto
+import com.app_will.geedrapplication.data.network.ApiInterface
+import com.app_will.geedrapplication.data.dto.MessagesDto
+import com.app_will.geedrapplication.data.dto.PlacesDto
+import com.app_will.geedrapplication.data.dto.UpdateLikeStatus
+import com.app_will.geedrapplication.data.dto.UpdateUserDto
+import com.app_will.geedrapplication.data.dto.UserDto
 import retrofit2.Response
 import javax.inject.Inject
 

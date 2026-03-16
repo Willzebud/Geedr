@@ -10,8 +10,8 @@ sealed class RootNavigation(val route: String) {
 
 sealed class MainNavigation(val route: String){
     object Places : MainNavigation("places")
-    object CheckinUser: MainNavigation("checkinUserScreen")
-    object UserCheckinProfil: MainNavigation("userCheckinProfil")
+    object CheckInUser: MainNavigation("checkInUserScreen")
+    object UserCheckInProfile: MainNavigation("userCheckInProfile")
     object Profile: MainNavigation("profile")
     object Messaging: MainNavigation("messaging")
 }

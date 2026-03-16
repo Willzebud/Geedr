@@ -24,7 +24,7 @@ import androidx.navigation.NavHostController
 import com.app_will.geedrapplication.R
 import com.app_will.geedrapplication.navigation.MainNavigation
 import com.app_will.geedrapplication.utils.NOTIFICATION_NBR
-import com.app_will.geedrapplication.utils.USERS_CHECKIN_ROUTE
+import com.app_will.geedrapplication.utils.USERS_CHECK_IN_ROUTE
 
 data class BottomNavigationBar(
     val icon: Painter,
@@ -40,8 +40,8 @@ fun BottomNavigationBar(
 
     val secondRoute = when(currentDestination.route){
         MainNavigation.Places.route -> MainNavigation.Places.route
-        MainNavigation.CheckinUser.route + USERS_CHECKIN_ROUTE ->
-            MainNavigation.CheckinUser.route + USERS_CHECKIN_ROUTE
+        MainNavigation.CheckInUser.route + USERS_CHECK_IN_ROUTE ->
+            MainNavigation.CheckInUser.route + USERS_CHECK_IN_ROUTE
         else -> MainNavigation.Places.route
     }
 

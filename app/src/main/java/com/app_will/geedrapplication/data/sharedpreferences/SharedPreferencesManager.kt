@@ -1,6 +1,7 @@
-package com.app_will.geedrapplication.utils
+package com.app_will.geedrapplication.data.sharedpreferences
 
 import android.content.SharedPreferences
+import com.app_will.geedrapplication.utils.MY_PREF_KEY_USERID
 import javax.inject.Inject
 import javax.inject.Singleton
 

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -36,18 +35,18 @@ import com.app_will.geedrapplication.ui.messaging.MessagingScreen
 import com.app_will.geedrapplication.ui.messaging.MessagingViewModel
 import com.app_will.geedrapplication.ui.places.PlacesScreen
 import com.app_will.geedrapplication.ui.places.PlacesViewModel
-import com.app_will.geedrapplication.ui.userscheckin.UsersCheckinScreen
-import com.app_will.geedrapplication.ui.userscheckin.UsersCheckinViewModel
-import com.app_will.geedrapplication.ui.usercheckinprofile.CheckinProfileScreen
-import com.app_will.geedrapplication.ui.usercheckinprofile.UserCheckinProfileViewModel
+import com.app_will.geedrapplication.ui.userscheckin.UsersCheckInScreen
+import com.app_will.geedrapplication.ui.userscheckin.UsersCheckInViewModel
+import com.app_will.geedrapplication.ui.usercheckinprofile.CheckInProfileScreen
+import com.app_will.geedrapplication.ui.usercheckinprofile.UserCheckInProfileViewModel
 import com.app_will.geedrapplication.ui.userprofil.UserProfileScreen
 import com.app_will.geedrapplication.ui.userprofil.UserProfileViewModel
 import com.app_will.geedrapplication.utils.NAV_ARG_CITY_NAME
 import com.app_will.geedrapplication.utils.NAV_ARG_PLACE_NAME
 import com.app_will.geedrapplication.utils.NAV_ARG_PLACE_TYPE
-import com.app_will.geedrapplication.utils.USER_CHECKIN_ID
-import com.app_will.geedrapplication.utils.USER_CHECKIN_PROFILE_ROUTE
-import com.app_will.geedrapplication.utils.USERS_CHECKIN_ROUTE
+import com.app_will.geedrapplication.utils.USER_CHECK_IN_ID
+import com.app_will.geedrapplication.utils.USER_CHECK_IN_PROFILE_ROUTE
+import com.app_will.geedrapplication.utils.USERS_CHECK_IN_ROUTE
 
 @Composable
 fun MainScreen(
@@ -57,10 +56,10 @@ fun MainScreen(
     val currentDestination = navBackStackEntry?.destination
 
     val showDialog = remember { mutableStateOf(false) }
-    val notification = remember { mutableStateOf(false) }
+    val notificationTrigger = remember { mutableStateOf(false) }
 
     val isBottomBarVisible = when (currentDestination?.route ) {
-        MainNavigation.UserCheckinProfil.route + USER_CHECKIN_PROFILE_ROUTE -> false
+        MainNavigation.UserCheckInProfile.route + USER_CHECK_IN_PROFILE_ROUTE -> false
         else -> true
     }
 
@@ -69,10 +68,10 @@ fun MainScreen(
         currentDestination = currentDestination,
         mainNavController = mainNavController,
         isDialogOpen = showDialog,
-        isLiked = notification,
+        isProfileLiked = notificationTrigger,
         onOpenDialog = {
             showDialog.value = true
-            notification.value = true
+            notificationTrigger.value = true
         },
 
     )
@@ -83,7 +82,7 @@ fun MainContent(
     isBottomBarVisible: Boolean,
     currentDestination: NavDestination?,
     mainNavController : NavHostController,
-    isLiked: MutableState<Boolean>,
+    isProfileLiked: MutableState<Boolean>,
     isDialogOpen: MutableState<Boolean>,
     onOpenDialog: () -> Unit
 
@@ -95,7 +94,7 @@ fun MainContent(
                     BottomNavigationBar(
                         navController = mainNavController,
                         currentDestination = currentDestination,
-                        isLiked = isLiked
+                        isLiked = isProfileLiked
                     )
                 }
             }
@@ -136,8 +135,8 @@ fun MainContent(
                     }
 
                     composable(
-                        MainNavigation.CheckinUser.route +
-                                USERS_CHECKIN_ROUTE,
+                        MainNavigation.CheckInUser.route +
+                                USERS_CHECK_IN_ROUTE,
                         arguments = listOf(
                             navArgument(NAV_ARG_PLACE_TYPE) {
                                 type = NavType.StringType
@@ -154,36 +153,36 @@ fun MainContent(
                         val placeName = navBackStackEntry.arguments?.getString(NAV_ARG_PLACE_NAME) ?: ""
                         val addressCity =
                             navBackStackEntry.arguments?.getString(NAV_ARG_CITY_NAME) ?: ""
-                        val usersCheckinViewModel: UsersCheckinViewModel = hiltViewModel()
+                        val usersCheckinViewModel: UsersCheckInViewModel = hiltViewModel()
 
 
-                        UsersCheckinScreen(
+                        UsersCheckInScreen(
                             placeName = placeName,
                             placeType = placeType,
                             addressCity = addressCity,
                             navController = mainNavController,
-                            usersCheckinViewModel = usersCheckinViewModel,
+                            usersCheckInViewModel = usersCheckinViewModel,
                             isDialogOpen = isDialogOpen,
                         )
                     }
 
                     composable(
-                        MainNavigation.UserCheckinProfil.route +
-                        USER_CHECKIN_PROFILE_ROUTE,
+                        MainNavigation.UserCheckInProfile.route +
+                        USER_CHECK_IN_PROFILE_ROUTE,
                         arguments = listOf(
-                            navArgument(USER_CHECKIN_ID) {
+                            navArgument(USER_CHECK_IN_ID) {
                                 type = NavType.LongType
                             },
                         )
                         ){ navBackStackEntry ->
 
                         val userCheckinId = navBackStackEntry
-                            .arguments?.getLong(USER_CHECKIN_ID) ?: 0
-                        val userCheckinProfileViewModel: UserCheckinProfileViewModel = hiltViewModel()
-                        CheckinProfileScreen(
+                            .arguments?.getLong(USER_CHECK_IN_ID) ?: 0
+                        val userCheckinProfileViewModel: UserCheckInProfileViewModel = hiltViewModel()
+                        CheckInProfileScreen(
                             userId = userCheckinId,
                             navController = mainNavController,
-                            userCheckinProfileViewModel = userCheckinProfileViewModel
+                            userCheckInProfileViewModel = userCheckinProfileViewModel
                         )
                     }
                 }
@@ -191,7 +190,6 @@ fun MainContent(
                 composable(MainNavigation.Profile.route) {
                     val userProfileViewModel: UserProfileViewModel = hiltViewModel()
                     UserProfileScreen(
-                        navController = mainNavController,
                         userProfileViewModel = userProfileViewModel
                     )
                 }

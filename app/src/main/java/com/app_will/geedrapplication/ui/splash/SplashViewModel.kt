@@ -3,7 +3,7 @@ package com.app_will.feedarticlesjetpackcomposeapplication.ui.splash
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app_will.geedrapplication.navigation.RootNavigation
-import com.app_will.geedrapplication.utils.SharedPreferencesManager
+import com.app_will.geedrapplication.data.sharedpreferences.SharedPreferencesManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
