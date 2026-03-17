@@ -1,4 +1,4 @@
-package com.app_will.geedrapplication.ui.usercheckinprofile
+package com.app_will.geedrapplication.ui.usersprofiles.usercheckinprofile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -83,7 +83,6 @@ class PlacesViewModel @Inject constructor(
                     val users = usersResponse.body().orEmpty()
 
                     _userCheckInActive.value = 0
-
                     _userCheckInActive.value = users.filter {user ->
                         user.isUserVisible
                     }.size

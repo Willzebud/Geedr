@@ -1,4 +1,4 @@
-package com.app_will.geedrapplication.ui.login
+package com.app_will.geedrapplication.ui.auth.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

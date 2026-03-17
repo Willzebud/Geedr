@@ -59,7 +59,6 @@ class UsersCheckInViewModel @Inject constructor(
                     }
 
                     _userCheckInActive.value = 0
-
                     _userCheckInActive.value = userCheckInList.filter { user ->
                         user.isUserVisible
                     }.size

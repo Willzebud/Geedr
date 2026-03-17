@@ -1,8 +1,11 @@
-package com.app_will.geedrapplication.ui.usercheckinprofile
+package com.app_will.geedrapplication.ui.usersprofiles.usercheckinprofile
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,8 +34,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -44,9 +52,11 @@ import coil.compose.AsyncImage
 import com.app_will.geedrapplication.R
 import com.app_will.geedrapplication.navigation.MainNavigation
 import com.app_will.geedrapplication.ui.components.Dialog
+import com.app_will.geedrapplication.utils.IS_USER_CHECK_IN_UPDATED
 import com.app_will.geedrapplication.utils.USER_CHECK_IN_UPDATED
 import com.app_will.geedrapplication.utils.UiEvent
 import com.app_will.geedrapplication.utils.showToast
+import kotlinx.coroutines.launch
 
 @Composable
 fun CheckInProfileScreen(
@@ -112,7 +122,7 @@ fun CheckInProfileScreen(
                 userCheckInVisibility = userVisibility,
             )
             navController.previousBackStackEntry?.savedStateHandle?.set(
-                USER_CHECK_IN_UPDATED,
+                IS_USER_CHECK_IN_UPDATED,
                 true
             )
             navController.popBackStack()
@@ -123,19 +133,19 @@ fun CheckInProfileScreen(
                 userCheckInVisibility = userVisibility,
             )
             navController.previousBackStackEntry?.savedStateHandle?.set(
-                USER_CHECK_IN_UPDATED,
+                IS_USER_CHECK_IN_UPDATED,
                 true
             )
             navController.popBackStack()
         },
-        onClickBackToUserCheckin = { navController.popBackStack() },
+        onClickBackToUserCheckIn = { navController.popBackStack() },
         onNavigateToMessaging = { userVisibility ->
             userCheckInProfileViewModel.userCheckInProfileVisibility(
                 userCheckInId = userId,
                 userCheckInVisibility = userVisibility,
             )
             navController.previousBackStackEntry?.savedStateHandle?.set(
-                USER_CHECK_IN_UPDATED,
+                IS_USER_CHECK_IN_UPDATED,
                 true
             )
             userCheckInProfileViewModel.navigateToScreen()
@@ -159,10 +169,11 @@ fun CheckInProfileContent(
     isDialogOpen: MutableState<Boolean>,
     onLikeProfile: (Boolean) -> Unit,
     onDislikeProfile: (Boolean) -> Unit,
-    onClickBackToUserCheckin: () -> Unit,
+    onClickBackToUserCheckIn: () -> Unit,
     onNavigateToMessaging: (Boolean) -> Unit
 
-    ) {
+) {
+
     Scaffold(
         bottomBar = {
             Row(
@@ -252,7 +263,7 @@ fun CheckInProfileContent(
                         )
                     }
                     TextButton(
-                        onClick = onClickBackToUserCheckin
+                        onClick = onClickBackToUserCheckIn
                     ) {
                         Text(
                             text = context.getString(R.string.close),

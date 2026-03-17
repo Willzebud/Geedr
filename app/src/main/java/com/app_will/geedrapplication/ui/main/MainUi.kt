@@ -37,10 +37,10 @@ import com.app_will.geedrapplication.ui.places.PlacesScreen
 import com.app_will.geedrapplication.ui.places.PlacesViewModel
 import com.app_will.geedrapplication.ui.userscheckin.UsersCheckInScreen
 import com.app_will.geedrapplication.ui.userscheckin.UsersCheckInViewModel
-import com.app_will.geedrapplication.ui.usercheckinprofile.CheckInProfileScreen
-import com.app_will.geedrapplication.ui.usercheckinprofile.UserCheckInProfileViewModel
-import com.app_will.geedrapplication.ui.userprofil.UserProfileScreen
-import com.app_will.geedrapplication.ui.userprofil.UserProfileViewModel
+import com.app_will.geedrapplication.ui.usersprofiles.usercheckinprofile.CheckInProfileScreen
+import com.app_will.geedrapplication.ui.usersprofiles.usercheckinprofile.UserCheckInProfileViewModel
+import com.app_will.geedrapplication.ui.usersprofiles.userprofil.UserProfileScreen
+import com.app_will.geedrapplication.ui.usersprofiles.userprofil.UserProfileViewModel
 import com.app_will.geedrapplication.utils.NAV_ARG_CITY_NAME
 import com.app_will.geedrapplication.utils.NAV_ARG_PLACE_NAME
 import com.app_will.geedrapplication.utils.NAV_ARG_PLACE_TYPE
@@ -153,15 +153,14 @@ fun MainContent(
                         val placeName = navBackStackEntry.arguments?.getString(NAV_ARG_PLACE_NAME) ?: ""
                         val addressCity =
                             navBackStackEntry.arguments?.getString(NAV_ARG_CITY_NAME) ?: ""
-                        val usersCheckinViewModel: UsersCheckInViewModel = hiltViewModel()
-
+                        val usersCheckInViewModel: UsersCheckInViewModel = hiltViewModel()
 
                         UsersCheckInScreen(
                             placeName = placeName,
                             placeType = placeType,
                             addressCity = addressCity,
                             navController = mainNavController,
-                            usersCheckInViewModel = usersCheckinViewModel,
+                            usersCheckInViewModel = usersCheckInViewModel,
                             isDialogOpen = isDialogOpen,
                         )
                     }
@@ -176,13 +175,13 @@ fun MainContent(
                         )
                         ){ navBackStackEntry ->
 
-                        val userCheckinId = navBackStackEntry
+                        val userCheckInId = navBackStackEntry
                             .arguments?.getLong(USER_CHECK_IN_ID) ?: 0
-                        val userCheckinProfileViewModel: UserCheckInProfileViewModel = hiltViewModel()
+                        val userCheckInProfileViewModel: UserCheckInProfileViewModel = hiltViewModel()
                         CheckInProfileScreen(
-                            userId = userCheckinId,
+                            userId = userCheckInId,
                             navController = mainNavController,
-                            userCheckInProfileViewModel = userCheckinProfileViewModel
+                            userCheckInProfileViewModel = userCheckInProfileViewModel
                         )
                     }
                 }

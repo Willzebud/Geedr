@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -34,16 +33,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.app_will.geedrapplication.R
 import com.app_will.geedrapplication.data.dto.UserDto
 import com.app_will.geedrapplication.ui.components.Dialog
 import com.app_will.geedrapplication.ui.components.ProgressBar
+import com.app_will.geedrapplication.utils.IS_USER_CHECK_IN_UPDATED
 import com.app_will.geedrapplication.utils.USER_CHECK_IN_ID_LIKE
 import com.app_will.geedrapplication.utils.USER_CHECK_IN_NUMBER
 import com.app_will.geedrapplication.utils.USER_CHECK_IN_UPDATED
@@ -72,12 +70,12 @@ fun UsersCheckInScreen(
 
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
 
-    val userCheckInUpdated = navController.currentBackStackEntry
+    val isUserCheckInUpdated = navController.currentBackStackEntry
         ?.savedStateHandle
-        ?.getStateFlow(USER_CHECK_IN_UPDATED, false)
+        ?.getStateFlow(IS_USER_CHECK_IN_UPDATED, false)
         ?.collectAsState()
 
-    LaunchedEffect(userCheckInUpdated) {
+    LaunchedEffect(isUserCheckInUpdated) {
         usersCheckInViewModel.getUsers()
     }
 
@@ -112,7 +110,7 @@ fun UsersCheckInScreen(
         onRefresh = { usersCheckInViewModel.swipeRefresh() },
         onClickBackToPlace = {
             navController.previousBackStackEntry?.savedStateHandle?.set(
-                USER_CHECK_IN_NUMBER,
+                IS_USER_CHECK_IN_UPDATED,
                 userCheckInNumber
             )
             navController.popBackStack()
@@ -235,7 +233,6 @@ fun UsersCheckInContent(
                     onRefresh = { onRefresh() }
                 ) {
 
-
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(3),
                         modifier = Modifier
@@ -309,22 +306,5 @@ fun UsersCheckInContent(
             }
 
         }
-    }
-
-
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview2() {
-    Surface(
-        onClick = {},
-        color = MaterialTheme.colorScheme.secondary,
-        modifier = Modifier
-            .height(200.dp)
-            .width(200.dp)
-    ) {
-
     }
 }

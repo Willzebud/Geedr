@@ -1,4 +1,4 @@
-package com.app_will.geedrapplication.ui.userprofil
+package com.app_will.geedrapplication.ui.usersprofiles.userprofil
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

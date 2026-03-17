@@ -36,6 +36,7 @@ import com.app_will.geedrapplication.data.dto.PlacesDto
 import com.app_will.geedrapplication.ui.components.ButtonMap
 import com.app_will.geedrapplication.ui.components.ProgressBar
 import com.app_will.geedrapplication.ui.components.TitleScreen
+import com.app_will.geedrapplication.utils.IS_USER_CHECK_IN_UPDATED
 import com.app_will.geedrapplication.utils.USER_CHECK_IN_NUMBER
 import com.app_will.geedrapplication.utils.UiEvent
 import com.app_will.geedrapplication.utils.actualGeoLocalisation
@@ -61,10 +62,12 @@ fun PlacesScreen(
 
     val userCheckInNumberUpdated = navController.currentBackStackEntry
         ?.savedStateHandle
-        ?.getStateFlow<Int?>(USER_CHECK_IN_NUMBER, null)
+        ?.getStateFlow(IS_USER_CHECK_IN_UPDATED, false)
         ?.collectAsState()
 
-
+    LaunchedEffect(userCheckInNumberUpdated){
+        placesViewModel.getPlaces()
+    }
 
     LaunchedEffect(Unit) {
         placesViewModel.responseUserStateFlow.collect { event ->
@@ -89,7 +92,7 @@ fun PlacesScreen(
         context = context,
         isProgressBarActive = isProgressBarActiveStateFlow,
         swipeRefreshState = swipeRefreshState,
-        userCheckInNumber = userCheckInNumberUpdated?.value ?: userCheckInNumber,
+        userCheckInNumber = userCheckInNumber,
         onRefresh = { placesViewModel.swipeRefresh() },
         onNavigateCheckInProfile = { placeType, placeName, addressCity ->
             placesViewModel.navigateToUsersCheckIn(

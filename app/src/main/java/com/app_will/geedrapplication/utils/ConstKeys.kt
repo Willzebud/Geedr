@@ -11,6 +11,7 @@ const val USERS_CHECK_IN_ROUTE = "/{placeType}/{placeName}/{addressCity}"
 
 const val USER_CHECK_IN_UPDATED = "success"
 const val USER_CHECK_IN_NUMBER = "success"
+const val IS_USER_CHECK_IN_UPDATED = "success"
 
 const val NAV_ARG_PLACE_TYPE = "placeType"
 const val NAV_ARG_PLACE_NAME = "placeName"
