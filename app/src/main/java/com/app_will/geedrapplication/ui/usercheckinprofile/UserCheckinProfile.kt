@@ -228,6 +228,8 @@ fun CheckInProfileContent(
                     AsyncImage(
                         model = userImgProfile,
                         contentDescription = null,
+                        error = painterResource(R.drawable.baseline_error_24),
+                        placeholder = painterResource(R.drawable.baseline_error_24),
                         modifier = Modifier
                             .fillMaxSize(),
                         contentScale = ContentScale.FillWidth

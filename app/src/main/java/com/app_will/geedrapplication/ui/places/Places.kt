@@ -84,7 +84,6 @@ fun PlacesScreen(
         }
     }
 
-
     PlacesContent(
         placesList = places,
         context = context,
@@ -185,10 +184,16 @@ fun PlacesContent(
                                 .width(60.dp)
                                 .padding(6.dp)
                         ) {
-                            Text(
-                                text = "$userCheckInNumber",
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                            if (places.id == "2")
+                                Text(
+                                    text = "${userCheckInNumber + places.userCheckin}",
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                             else
+                                Text(
+                                    text = "$userCheckInNumber",
+                                    color = MaterialTheme.colorScheme.primary
+                                )
                             Icon(
                                 painter = painterResource(
                                     id = R.drawable.people_24dp_f88e8e

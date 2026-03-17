@@ -44,7 +44,6 @@ class UsersCheckInViewModel @Inject constructor(
     val navigateToScreen = _navigateToScreen.asSharedFlow()
 
     fun getUsers() {
-        _userCheckInActive.value = 0
         _isProgressBarActiveStateFlow.value = true
         viewModelScope.launch {
             try {
@@ -53,17 +52,17 @@ class UsersCheckInViewModel @Inject constructor(
                 }
 
                 if (res.isSuccessful) {
-                    val userCheckinList = res.body().orEmpty()
+                    val userCheckInList = res.body().orEmpty()
 
-                    _userCheckInFilterStateFlow.value = userCheckinList.filter { user ->
+                    _userCheckInFilterStateFlow.value = userCheckInList.filter { user ->
                         user.isUserCheckin && user.isUserVisible
                     }
 
-                    userCheckinList.forEach { user ->
-                        if (user.isUserVisible) {
-                            _userCheckInActive.value += 1
-                        }
-                    }
+                    _userCheckInActive.value = 0
+
+                    _userCheckInActive.value = userCheckInList.filter { user ->
+                        user.isUserVisible
+                    }.size
 
                 } else {
                     when (res.code()) {

@@ -84,11 +84,10 @@ class PlacesViewModel @Inject constructor(
 
                     _userCheckInActive.value = 0
 
-                    users.forEach { user ->
-                        if (user.isUserVisible) {
-                            _userCheckInActive.value += 1
-                        }
-                    }
+                    _userCheckInActive.value = users.filter {user ->
+                        user.isUserVisible
+                    }.size
+
                 } else {
                     when (usersResponse.code()) {
                         API_RESPONSE_CODE_400 -> _responseUserSharedFlow.emit(

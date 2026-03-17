@@ -5,7 +5,7 @@
       "message_picture": "https://image2url.com/r2/default/images/1773531123512-51b3bfa7-07b0-4cf0-a962-4c1622a95d57.jpg",
       "message_name": "Lina",
       "message_text": "Envoyez un message pour vous retrouver",
-      "is_visible": true
+      "is_visible": false
     },
     {
       "id": 2,
@@ -260,7 +260,7 @@
       ],
       "user_role": "USER",
       "place_number": 1,
-      "is_visible": false,
+      "is_visible": true,
       "user_status": "ACTIVE",
       "user_latitude": 43.332474,
       "user_longitude": 5.374459,

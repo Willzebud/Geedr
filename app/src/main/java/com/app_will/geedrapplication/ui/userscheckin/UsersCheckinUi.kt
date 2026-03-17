@@ -260,10 +260,7 @@ fun UsersCheckInContent(
 
                                 ) {
                                     AsyncImage(
-                                        model = ImageRequest.Builder(LocalContext.current)
-                                            .data(userProfile.userPicture)
-                                            .crossfade(true)
-                                            .build(),
+                                        model = userProfile.userPicture,
                                         error = painterResource(R.drawable.baseline_error_24),
                                         placeholder = painterResource(R.drawable.baseline_error_24),
                                         contentDescription = null,
